@@ -2,7 +2,7 @@
   "name": "innomobile-branch-cordova-sdk",
   "description": "Branch Metrics Cordova SDK",
   "main": "src/index.js",
-  "version": "3.1.8-beta.1",
+  "version": "3.1.8-beta.2",
   "homepage": "https://github.com/BranchMetrics/cordova-ionic-phonegap-branch-deep-linking",
   "repository": {
     "type": "git",
