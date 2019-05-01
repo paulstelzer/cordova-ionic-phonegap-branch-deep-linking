@@ -126,24 +126,11 @@
 
   // read iOS project module from cordova context
   function getProjectModule(context) {
-    const projectRoot = getProjectRoot(context);
-    const projectPath = path.join(projectRoot, "platforms", "ios");
-
     try {
-      // pre 5.0 cordova structure
-      return context
-        .requireCordovaModule("cordova-lib/src/plugman/platforms")
-        .ios.parseProjectFile(projectPath);
+      // Only cordova 7 or newer is supported
+      return getProjectModuleGlob(context);
     } catch (e) {
-      try {
-        // pre 7.0 cordova structure
-        return context
-          .requireCordovaModule("cordova-lib/src/plugman/platforms/ios")
-          .parseProjectFile(projectPath);
-      } catch (e) {
-        // post 7.0 cordova structure
-        return getProjectModuleGlob(context);
-      }
+      console.log('ERROR with getProjectModule');
     }
   }
 
@@ -151,12 +138,13 @@
     // get xcodeproj
     const projectRoot = getProjectRoot(context);
     const projectPath = path.join(projectRoot, "platforms", "ios");
-    const projectFiles = context
-      .requireCordovaModule("glob")
+    const glob = require('glob');
+    const projectFiles = glob
       .sync(path.join(projectPath, "*.xcodeproj", "project.pbxproj"));
     if (projectFiles.length === 0) return;
     const pbxPath = projectFiles[0];
-    const xcodeproj = context.requireCordovaModule("xcode").project(pbxPath);
+    const xcode = require('xcode');
+    const xcodeproj = xcode.project(pbxPath);
 
     // add hash
     xcodeproj.parseSync();
@@ -166,7 +154,7 @@
       xcode: xcodeproj,
       write: function() {
         // save xcodeproj
-        const fs = context.requireCordovaModule("fs");
+        const fs = require("fs");
         fs.writeFileSync(pbxPath, xcodeproj.writeSync());
 
         // pull framework dependencies
@@ -174,12 +162,12 @@
         let frameworks = {};
 
         try {
-          frameworks = context.requireCordovaModule(frameworksFile);
+          frameworks = require(frameworksFile);
         } catch (e) {}
         // If there are no framework references, remove this file
         if (Object.keys(frameworks).length === 0) {
-          return context
-            .requireCordovaModule("shelljs")
+          const shelljs = require('shelljs');
+          return shelljs
             .rm("-rf", frameworksFile);
         }
 
