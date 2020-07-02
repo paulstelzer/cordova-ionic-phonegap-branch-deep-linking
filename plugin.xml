@@ -83,10 +83,10 @@ SOFTWARE.
 
       <podspec>
           <config>
-              <source url="https://github.com/CocoaPods/Specs.git"/>
+              <source url="https://cdn.cocoapods.org/"/>
           </config>
           <pods>
-              <pod name="Branch" spec="~> 0.31.3" />
+              <pod name="Branch" spec="~> 0.34.0" />
           </pods>
       </podspec>
   </platform>
